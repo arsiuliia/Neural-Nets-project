@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../styles/styles_detection.css">
+  </head>
+  <body>
+    <div class="buttons">
+      <button onclick="window.location.href='accueil.html'">Accueil</button>
+    </div>
+    <p></p>
+    <div class="wordart horizon"><span class="text">DÉTÉCTION</span></div>
+    <p></p>
+    <form id="my-form" action="http://127.0.0.1:8000/predict" method="POST">
+      <h2>Entrer le texte à vérifier (en anglais)</h2>
+      <textarea id="text-input" name="title"></textarea>
+      <input type="submit" value="Vérifier">
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+      const form = document.getElementById('my-form');
+      const textInput = document.getElementById('text-input');
+      const resultDiv = document.getElementById('result');
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault(); // empêcher la soumission du formulaire
+
+        const url = form.getAttribute('action');
+        const data = {title: textInput.value};
+
+        fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => resultDiv.innerText = data.prediction)
+        .catch(error => console.error(error));
+      });
+    </script>
+  </body>
+</html>

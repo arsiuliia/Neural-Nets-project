@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../styles/styles_documentation.css">
+  </head>
+  <body>
+    <h1>DOCUMENTATION DU PROJET</h1>
+    <div class="buttons">
+      <button onclick="window.location.href='accueil.html'">accueil</button>
+      </div>
+    <div class="white-transparent">
+      <div class="image-container">
+        <img src="../images/detection.png" alt="sphynx build by reptilian caught in anciant papirus and explaining hieroglyphs " width="400" height="300">
+      </div>
+        <h1><b>Objectifs du projet</b></h1>
+        <p>L’objectif premier de ce projet était la création d’un générateur de théories du complot. </p>
+        <p>La motivation principale était l’amusement et la perspective enthousiasmante de produire des absurdités scientifiques et historiquement infondées. Toutefois, un professeur rompu à l’art de la diplomatie nous a subtilement rappelé que l’éthique n’était pas qu’une notion de la philosophie grecque. Nous avons alors admis que, même si notre projet allait rester dans le cadre très restreint de cet enseignement universitaire, il serait plus louable de travailler sur un projet pour lequel on pourrait imaginer une application industrielle vertueuse.</p>
+        <p>
+          Néanmoins, la construction d’un modèle de génération de texte demeurait quelque chose que nous souhaitions tester. Nous avons donc eu l’idée d’un projet hybride, qui exploiterait les phrases produites par un générateur de texte pour améliorer le corpus d’un détecteur de théories du complot et de fake news.  Spoiler : cela ne s’est pas passé comme prévu. Nous aborderons ces points.
+          </p>
+
+        <div class="image-container">
+          <img src="../images/reptilians_rule_the_world.png" alt="anciant papirus drawing of an reptilian as freemasons ruling the world" width="400" height="300">
+        </div>
+
+        <h1><b>Description du système et des données auquel le système permet d’accéder </b></h1>
+        <p>Notre projet prend la forme d’un site web donnant accès à trois pages html (mais vous le savez déjà puisque vous avez cliqué sur documentation pour venir ici). Les pages “Génération” et “Détection” contiennent deux formulaires. Le formulaire de la page “Génération” envoie à notre API une requête post permettant de générer un extrait de théorie du complot sur la base d’une séquence textuelle fournie par l’utilisateurice. Le formulaire de la page “Détection” envoie une requête post à notre API, un message s’affiche et évalue la véracité de la phrase donnée en entrée.
+        </p>
+        <p>Nous utilisons une API créée avec FastApi, qui charge nos modèles entraînés et les exploite dans des fonctions accessibles via deux points d’entrées distincts : pour la génération et pour la détection.</p>
+        <p>Vous trouverez ci-bas le code de notre API commentée
+        </p>
+
+        <div class="image-container">
+          <img src="../images/illuminatti.png" alt="illuminatti" width="400" height="300">
+        </div>
+        <h1>Méthodologie et répartition de la charge de travail </h1>
+        <h2>Datasets</h2>
+        <p>La première tâche à laquelle nous nous sommes attelés fut la constitution de nos corpus. Etant donné le caractère bicéphal de notre projet, nous avons dû rassembler deux jeux de données distincts, un premier pour apprendre à un modèle A à générer des phrases telles que “Les aliens ont construit les pyramides”, un second jeu de données pour apprendre à un modèle B à détecter que cette information est fallacieuse. 
+        </p>
+        <p>Nous avons cherché des corpus sur huggingface, paperswithcode, kaggle mais sans résultat. Les données qui existent sur les plateformes mentionnées ne nous ont pas semblé assez riches pour la bonne génération des théories. Pour cette raison nous avons pris la décision de créer notre propre dataset qui remplira nos critères pour la tâche. Nous nous sommes rendus compte que les données les plus prometteuses peuvent être trouvées sur des forums, des réseaux sociaux etc. Nous avons choisi le site reddit.com avec son abondance d'informations anti-science et de “shitposting”. Nos données actuelles contiennent les 1000 posts de chaque subreddit tel que: ‘Reptilitans’, ‘Aliens among us’, ‘Conspiracy’, ‘Illuminati’, ‘Freemasons’, ‘Flat Earth’.
+        </p>
+        <h2>Répartition de la charge de travail</h2>
+        <p>Dans un premier temps, nous avons travaillé à deux sans nous spécialiser. La génération nous semblait être la tâche la plus ardue, probablement car le premier semestre nous avait déjà amené à faire des classifieurs. Nous avons fouillé internet à la recherche de tutoriels et testé différentes méthodes. Les premiers essais étaient peu concluants et s’achevaient souvent par des générations sous forme de boucles syntaxiques répétitives. Nous avons tenté plusieurs tutoriels youtube et autres méthodes disponibles sur stack overflow pour enfin trouver une structure de base performante que nous allions modifier. 
+        </p>
+        <p>Les modèles les plus performants furent ceux trouvés par Iuliia. Baptiste s’est dès lors attelé à la construction d’une API et d’un code html à même d’accueillir le générateur et le détecteur.</p>
+        <h2>Kaggle</h2>
+        <p>Nos machines n’ayant pas la capacité de faire tourner des modèles d’apprentissage des heures durant (ou plutôt de le faire sans étourderie humaine venant tout saboter fermant la page par mégarde), nous avons travaillé sur la plateforme collaborative Kaggle et fait tourner nos scripts via un serveur distant.
+        </p>
+        <h1>Implémentation</h1>
+        <h2>Generation</h2>
+        <p>Notre modèle de génération utilise un réseau de neurones récurrents LSTM. On utilise la classe Sequential de keras pour construire le modèle. Comme son nom l’indique, cette classe permet de créer des réseaux de neurones séquentiels simples. Le modèle se compose d’une séquence linéaire de couches.</p>
+        <p>Les données sont prétraitées via les bibliothèques numpy et tensorflow. Division des données en séquences textuelles encodées en entiers et en étiquettes (le caractère suivant) puis passées au rnn. 
+        </p>
+        <span style="text-decoration: underline;">Notre modèle contient quatre couches :</span>
+      </br></br>
+        <li style="text-align: justify;"> Une première couche LSTM avec 256 cellules. return_sequences est True, cela signifie qu’on renvoie des séquences à la couche suivante. Cela permet de se concentrer sur des motifs à court terme.
+        </li>
+        <li style="text-align: justify;"> Une deuxième couche de dropout qui permet de supprimer 30% des sorties de la première couche afin d’éviter le surapprentissage du modèle</li>
+        <li style="text-align: justify;"> Une troisième couche LSTM avec 256 cellules. Ici le paramètre return_sequences reste sur sa valeur par défaut, à savoir False. On n’envoie pas de séquences à la couche suivante mais une sortie unique. Cela permet de se concentrer sur les motifs à long-terme.</li>
+      <li style="text-align: justify;">Une quatrième et dernière couche Dense, qui permet de faire les prédicitons. Elle génère une probabilité pour chacun des caractères possibles. 
+      </li>
+          <h2>Détection</h2>
+          <p>Notre modèle de détection utilise également la classe Sequential de tensorflow. Il prend en entrée des titres d’articles fallacieux pris dans le corpus de fake news et tranche quant à leur véracité. Nous avons entraîné le modèle sur un corpus de titres de news vraies et “fake”.</p>
+          <div>
+          <span style="text-decoration: underline;">Les prétraitements ont été réalisés via tensorflow également :
+          </span>
+          </br>
+        </br>
+          <li style="text-align: justify;">Nous utilisons son tokenizer qui permet de découper notre corpus en mots et de leur attribuer des valeurs numérique
+          </li>
+          <li style="text-align: justify;">Nous utilisons son tokenizer qui permet de découper notre corpus en mots et de leur attribuer des valeurs numérique
+          </li>
+          <p>Le modèle se base sur des vecteurs de mots pré-entraînés par des gens plus compétents que nous: gloVe (Global Vectors for Word Representation).
+          </p>
+        </br>
+        </div>
+          <div>
+          <span style="text-decoration: underline;">Notre modèle de détection utilise six couches :</span>
+          </br></br>
+  <li style="text-align: justify;"> Une première couche d’embeddings : elle transforme les vecteurs de mots en une représentation dense et continue de la séquence de mots, qui peut être traitée plus facilement par le réseau de neurones.</li>
+  <li style="text-align: justify;"> Une couche Dropout qui supprime aléatoirement des cellules lors de l’apprentissage pour éviter le surapprentissage.</li>
+  <li style="text-align: justify;"> Une couche Conv1D et une couche MaxPooling1D sont utilisées pour que le modèle se focalise sur les motifs récurrents dans les données (groupes de mots et collocations par exemple).</li>
+  <li style="text-align: justify;"> Une couche LSTM de 64 unités de mémoire pour caputer les relations de dépendance à long-terme entre les mots.</li>
+  <li style="text-align: justify;"> Une couche Dense qui permet de faire les prédictions sur le prochain caractère à générer.</li>
+         </div>
+         
+          <h2>Echec des transformers</h2>
+          <p>Nous nous sommes aussi intéressés aux modèles pré-entraînés dits transformers comme gpt-2 et gpt-3. Cet essai n’était pas trop prolifique parce que les accélérateurs de Kaggle ne sont pas compatibles avec les CPUs de nos ordinateurs. Et comme mentionné ci-dessus on ne pouvait pas se risquer à faire un réapprentissage sur nos machines.
+          </p>
+          <h1>Discussion des résultats et améliorations éventuelles</h1>
+          <p>Comme vous aurez pu le constater si vous avez testé les deux modèles : ils sont assez mauvais. Nous avons testé différentes valeurs pour les epochs mais Kaggle ne nous permet d’entraîner que pendant 12h maximum et ne nous autorise qu’une trentaine d’heures par semaine pour l’utilisation d’un GPU qui permet d’accélérer le processus d’entraînement.
+          </p>
+          <p>Le peu de succès de notre modèle de détection vient probablement du fait qu’il a été entraîné sur des données légèrement différentes que celles utilisées pour générer. Le modèle de détection se base sur des titres de news tandis que notre modèle de génération apprend sur les théories du complot extraites sur le sulfureux réseau social “Reddit”. Nous n’avons pas trouvé de corpus annoté en théorie du complot et avons fait au plus proche. Un temps plus long à consacrer au projet nous aurait peut-être permis de créer notre propre dataset mais cela aurait nécessité une longue et fastidieuse phase d’annotation. 
+          </p>
+          <p>En ce qui concerne la génération, le modèle tourne vite en rond sur les mêmes phrases. Il s’agirait de lui fournir un plus grand nombre de données si les quotas kaggle nous le permettaient.</p>
+    </div>
+    <p>Consultez les pages dessus pour voir les scripts</p>
+    <div class="my-button">
+      <button onclick="window.location.href='script_parsing.html'">Parsing</button>
+      <button onclick="window.location.href='script_generation.html'">Génération</button>
+      <button onclick="window.location.href='script_detection.html'">Détection</button>
+      <button onclick="window.location.href='script_API.html'">API</button>
+    </div>
+  </body>
+</html>

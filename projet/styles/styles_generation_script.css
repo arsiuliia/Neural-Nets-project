@@ -1,0 +1,68 @@
+body {
+  background-image: url('../images/pyramids\ and\ egyptian\ hieroglyphics.png');
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+button {
+  background-color: beige;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.white-transparent {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 50px;
+  border-radius: 10px;
+  margin-top: 50px;
+  max-width: 800px;
+  width: 100%;
+}
+
+.image-container {
+  text-align: center;
+}
+
+.wordart {
+  font-family: Arial, sans-serif;
+  font-size: 4em;
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wordart.slate {
+    transform: scale(1, 1.5);
+    -webkit-transform: scale(1, 1.5);
+    -moz-transform: scale(1, 1.5);
+    -o-transform: scale(1, 1.5);
+    -ms-transform: scale(1, 1.5);
+}
+
+.wordart.slate .text {
+    font-family: Times, 'Times New Roman', serif;
+    font-weight: normal;
+    color: #2F5485;
+    text-shadow: 0.03em 0.03em 0px #B3B3B3;
+}

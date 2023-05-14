@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../styles/styles_generation.css">
+  </head>
+  <body>
+    <div class="buttons">
+      <button onclick="window.location.href='accueil.html'">Accueil</button>
+    </div>
+    <p></p>
+    <div class="wordart tilt"><span class="text">GÉNÉRATION</span></div>
+    <p></p>
+    <form id="my-form">
+      <h2>Entrer le mot à partir duquel générer (en anglais)</h2>
+	  <h3>La génération peut prendre quelques dizaines de secondes</h3>
+      <textarea id="seed-input" name="seed"></textarea>
+      <input type="submit" value="Envoyer">
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+      const form = document.getElementById('my-form');
+      const seedInput = document.getElementById('seed-input');
+      const resultDiv = document.getElementById('result');
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const url = "http://127.0.0.1:8000/text_generation";
+        const data = {seed: seedInput.value};
+
+        fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => resultDiv.innerText = data.result)
+        .catch(error => console.error(error));
+      });
+    </script>
+  </body>
+</html>

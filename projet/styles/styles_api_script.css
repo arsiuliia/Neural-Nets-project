@@ -1,0 +1,41 @@
+body {
+    background-image: url('../images/papirus drawning of freemasons reptilians building the pyramids in ancient Egypt .png');
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  button {
+    background-color: beige;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    margin: 0 10px;
+    cursor: pointer;
+  }
+  
+  .white-transparent {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 50px;
+    border-radius: 10px;
+    margin-top: 50px;
+    max-width: 800px;
+    width: 100%;
+  }
+  
+  .image-container {
+    text-align: center;
+  }
